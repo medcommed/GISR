@@ -1,0 +1,126 @@
+
+entity EnPrestation {
+    information  TextBlob,
+    nom  String, 
+    description  TextBlob,
+    centreCoaph  String, 
+    centreCape  String, 
+    centreEmf  String,
+    centreEps  String, 
+    centreCas  String,
+    centreAutre  String,
+    ciblePsh  String,
+    cibleF  String,
+    cibleEsd String,
+    ciblePa String,
+    cibleAutre String,
+    catPersPhys String,
+    catFam String,
+    catAssoc String,
+    catAutre String,
+    declencheurCentre String,
+    declencheurBenefs String,
+    resDoc String,
+    resMaj String,
+    resAutre String,
+    inputPrestation TextBlob,
+    nbrEtape String,
+    etapeUn String,
+    etapeDeux String, 
+    etapeTrois String,
+    etapeQuatre String,
+    etapeCinq String,
+    etapeSix String,
+    etapeSept String,
+    fourniePar String
+}
+
+
+entity Prestation {
+    designation   String required minlength(2) maxlength(255) unique, 
+    information  TextBlob required,
+    description  TextBlob,
+    inputPrestation TextBlob required,
+    nbrEtapes String required,
+    isGisr Boolean required,
+    commentaire TextBlob,
+    file AnyBlob,
+}
+
+entity Centre {
+    designation  String required minlength(2) maxlength(255) unique,
+    description TextBlob required,
+    isPoleSocial Boolean required,
+    isGisr Boolean required,
+}
+
+
+entity Cible{
+   designation  String required minlength(2) maxlength(255) unique,
+   description String required,
+}
+
+entity CatBenef {
+   designation  String required minlength(2) maxlength(255) unique,
+   description String required
+}
+
+entity Declencheur{
+   designation  String required minlength(2) maxlength(255) unique,
+   description String required
+}
+
+entity Resultat{
+   designation String required minlength(2) maxlength(255) unique,
+   description String required
+}
+
+entity FourniePar{
+   designation String required minlength(2) maxlength(255) unique,
+   description String required
+}
+
+entity Etape {
+   orderInProcess Long min(1) max(30) required,
+   designation String required minlength(2) maxlength(255) unique,
+   description String
+}
+
+entity TypeVariable {
+   typeVariable String required minlength(2) maxlength(255) unique,
+   description String minlength(2) maxlength(255),
+}
+entity Variable {
+   designation String required minlength(2) maxlength(255) unique,
+   description String minlength(2) maxlength(255),
+   obligatoire Boolean required,
+   communne Boolean required,
+   remarque TextBlob,
+}
+
+
+relationship ManyToMany {
+Prestation{cible(designation) required} to Cible{prestation required},
+Prestation{centre(designation) required} to Centre{prestation required},
+Prestation{catebenef(designation) required} to CatBenef{prestation required},
+Prestation{declencheur(designation) required} to Declencheur{prestation required},
+Prestation{resultat(designation) required} to Resultat{prestation required},
+Prestation{fourniePar(designation) required} to FourniePar{prestation required},
+}
+
+relationship ManyToMany {
+Variable{cible(designation) required} to Cible{variable},
+}
+
+relationship OneToMany {
+	Prestation to Etape{prestation required},
+}
+
+
+// Set pagination options
+paginate Centre, Cible, CatBenef, Declencheur, Resultat, FourniePar, Etape with infinite-scroll
+paginate Prestation, EnPrestation with pagination
+
+// Set service options to all except few
+service * with serviceImpl 
+filter *
